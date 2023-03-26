@@ -3,12 +3,21 @@ import Topbar from "../../components/topbar/Topbar";
 import Conversation from "../../components/conversations/Conversation";
 import Message from "../../components/message/Message";
 import ChatOnline from "../../components/chatOnline/ChatOnline";
-import { useContext, useEffect, useRef, useState } from "react";
+import { React, useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import { io } from "socket.io-client";
+import Picker from 'emoji-picker-react';
+
 
 export default function Messenger() {
+  const [showPicker, setShowPicker] = useState(false);
+
+  const onEmojiClick = (event, emojiObject) => {
+    setNewMessage(prevInput => prevInput + emojiObject.emoji);
+    setShowPicker(false);
+  };
+
   const [conversations, setConversations] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -126,12 +135,20 @@ export default function Messenger() {
                   ))}
                 </div>
                 <div className="chatBoxBottom">
-                  <textarea
-                    className="chatMessageInput"
-                    placeholder="write something..."
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    value={newMessage}
-                  ></textarea>
+                  <div className="picker-container">
+                    <input
+                      placeholder='write something...'
+                      className="chatMessageInput"
+                      value={newMessage}
+                      onChange={e => setNewMessage(e.target.value)} />
+                    <img
+                      className="emoji-icon"
+                      src="https://icons.getbootstrap.com/assets/icons/emoji-smile.svg"
+                      onClick={() => setShowPicker(val => !val)} />
+                    {showPicker && <Picker
+                      pickerStyle={{ width: '100%' }}
+                      onEmojiClick={onEmojiClick} />}
+                  </div>
                   <button className="chatSubmitButton" onClick={handleSubmit}>
                     Send
                   </button>
